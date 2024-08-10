@@ -14,6 +14,7 @@ public class CardItem : MonoBehaviour, IPointerClickHandler
     public Image image;
     public Action<CardItem> OnClickOpen;
     public bool isOpen = false;
+    public AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +35,7 @@ public class CardItem : MonoBehaviour, IPointerClickHandler
         }
         Debug.Log("Object clicked!");
         this.gameObject.GetComponent<Animation>().Play("cardFlipOpen");
+        audioSource.Play();
         OnClickOpen?.Invoke(this);
     }
 
