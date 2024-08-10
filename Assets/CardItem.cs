@@ -1,15 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class CardItem : MonoBehaviour
+public class CardItem : MonoBehaviour, IPointerClickHandler
 {
-    public TextMeshProUGUI textNumber;
+    public TextMeshProUGUI Text;
+    public string Number;
+    public GameObject FrontSide;
+    public Image image;
+    public Action<CardItem> OnClickOpen;
+    public bool isOpen = false;
     // Start is called before the first frame update
     void Start()
     {
-        
+        Text.text = Number;
     }
 
     // Update is called once per frame
@@ -17,4 +25,17 @@ public class CardItem : MonoBehaviour
     {
         
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (isOpen)
+        {
+            return;
+        }
+        Debug.Log("Object clicked!");
+        this.gameObject.GetComponent<Animation>().Play("cardFlipOpen");
+        OnClickOpen?.Invoke(this);
+    }
+
+
 }
