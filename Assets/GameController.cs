@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
@@ -19,6 +20,7 @@ public class GameController : MonoBehaviour
     public CardItem cardItem2;
     public TMP_InputField Row;
     public TMP_InputField Column;
+    public TMP_InputField Pair;
     public AudioSource audioSource;
     public AudioClip Correct;
     public AudioClip Mismatch;
@@ -33,30 +35,47 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        StartGame(true);
+        Pair.text = "4";
     }
 
-    public void StartGame()
+    public void StartGame(bool start = false)
     {
         match++;
         Match.text = match.ToString();
 
         ClearBoard();
-        var cardNum = int.Parse(Row.text) + int.Parse(Column.text);
-        Deck deck = new Deck(cardNum / 2);
-        gameOverScore = cardNum / 2;
+        // var cardNum = int.Parse(Row.text) + int.Parse(Column.text);
+        // Deck deck = new Deck(cardNum / 2);
+        var cardNum = 0;
+        if (start == true) 
+        {
+            cardNum = 4;
+
+        }
+        else
+        {
+            cardNum = int.Parse(Pair.text);
+        }
+          
+        if(cardNum > 26)
+        {
+            cardNum = 26;
+        }
+        Deck deck = new Deck(cardNum);
+        gameOverScore = cardNum ;
         deck.Shuffle();
-        var constraintCountGrid = 0;
-        if (int.Parse(Row.text) > int.Parse(Column.text))
+        var constraintCountGrid = 13;
+        /*if (int.Parse(Row.text) > int.Parse(Column.text))
         {
             constraintCountGrid = int.Parse(Row.text);
         }
         else
         {
             constraintCountGrid = int.Parse(Column.text);
-        }
+        }*/
         GridLayout.GetComponent<GridLayoutGroup>().constraintCount = constraintCountGrid;
-       
+
         CreateCard(deck.Cards);
     }
 
@@ -120,7 +139,7 @@ public class GameController : MonoBehaviour
         if (cardItem1.Number == cardItem2.Number)
         {
             score++;
-            ScoreText.text =  score.ToString();
+            ScoreText.text = score.ToString();
             audioSource.clip = Correct;
             audioSource.Play();
             StartCoroutine(ScoreUp());
@@ -146,9 +165,11 @@ public class GameController : MonoBehaviour
 
     IEnumerator WaitForClose()
     {
-        var cardTemp1 = cardItem1;
-        var cardTemp2 = cardItem2;
+        CardItem cardTemp1 = cardItem1;
+        CardItem cardTemp2 = cardItem2;
         ClearCard();
+        Debug.Log(cardTemp1.Number);
+        Debug.Log(cardTemp2.Number);
         yield return new WaitForSeconds(0.75f);
         cardTemp1.isOpen = false;
         cardTemp2.isOpen = false;
@@ -162,9 +183,11 @@ public class GameController : MonoBehaviour
 
     IEnumerator ScoreUp()
     {
-        var cardTemp1 = cardItem1;
-        var cardTemp2 = cardItem2;
+        CardItem cardTemp1 = cardItem1;
+        CardItem cardTemp2 = cardItem2;
         ClearCard();
+        Debug.Log(cardTemp1.Number);
+        Debug.Log(cardTemp2.Number);
         yield return new WaitForSeconds(0.75f);
         cardTemp1.FrontSide.SetActive(false);
         cardTemp2.FrontSide.SetActive(false);
@@ -190,7 +213,7 @@ public class GameController : MonoBehaviour
     public void Load()
     {
         var load = PlayerPrefs.GetString("save");
-        if(!string.IsNullOrEmpty(load)) 
+        if (!string.IsNullOrEmpty(load))
         {
             var loadData = load.Split(":");
             int[] cardData = loadData[0].Split(',').Select(int.Parse).ToArray();
@@ -211,5 +234,10 @@ public class GameController : MonoBehaviour
             Match.text = param[1].ToString();
             ScoreText.text = param[2].ToString();
         }
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

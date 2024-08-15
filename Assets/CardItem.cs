@@ -33,7 +33,7 @@ public class CardItem : MonoBehaviour, IPointerClickHandler
         {
             return;
         }
-        Debug.Log("Object clicked!");
+        //Debug.Log("Object clicked!");
         this.gameObject.GetComponent<Animation>().Play("cardFlipOpen");
         audioSource.Play();
         OnClickOpen?.Invoke(this);
